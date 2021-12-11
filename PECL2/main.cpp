@@ -1,13 +1,19 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <iomanip>
+#include <vector>
 #include "Tipos.h"
 #define N1 8
 #define N2 100
 #define N3 12
-#define N4 6*N3
+#define N5 6
+#define N4 N5*N3
+
 using namespace std;
-std::string localidades[8] = {"Daganzo","Alcalá", "Mejorada", "Nuevo Baztán", "Arganda", "Carabaña", "Chinchón", "Villarejo"};
+
+std::string localidades[] = {"Daganzo","Alcala", "Mejorada", "Nuevo Baztan", "Arganda", "Carabanna", "Chinchon", "Villarejo"};
+
 string padTo(std::string &str, const size_t num, const char paddingChar = '0')
 {
     if(num > str.size())
@@ -26,18 +32,15 @@ string generarIdPaquete()
 
     return id;
 }
-string generarNumCP()
+int generarNumCP()
 {
-    int numCP=rand()%1000;
-    return numCP;
+    return rand()%1000;
 }
 string AsignarLocalidades()//Revisar
 {
-    int size= 7
-    aleatorio=rand()%size;
-    indice= localidades[aleatorio];
-    localidad=array.splice(indice, 1);
-    return localidad;
+    int size= 7;
+    int aleatorio=rand()%size;
+    return localidades[aleatorio];
 }
 string generarNIF()
 {
@@ -45,11 +48,10 @@ string generarNIF()
     string NIF;
     char letras[] = {'T','R','w','A','G','M','Y','F','P','D','X','B','N','J','Z','S','Q','V','H','L','C','K','E'};
 
-    for (int i=0;i<6;i++)
+    for (int i=0; i<6; i++)
     {
         numero = numero*10 + rand()%10;
     }
-
     NIF = to_string(numero) + letras[numero%23];
 
     return NIF;
@@ -77,13 +79,14 @@ CoordenadasGPS generarCoordenadas()
     return c;
 }
 
-Paquete generarPaquete()
+Paquete generarPaquete(int numCp)
 {
     Paquete p;
 
     p.idPaquete = generarIdPaquete();
     p.coordenadas = generarCoordenadas();
     p.NIF = generarNIF();
+    p.numCP = numCp;
 
     return p;
 }
@@ -92,75 +95,103 @@ CP generarCpPredeterminado()
     CP cp;
     cp.numCP=generarNumCP();
     cp.localidad=AsignarLocalidades();
-    cp.listaPaq=null;
+//    cp.listaPaq=NULL; // No es un puntero
+
     return cp;
 }
 
 void cogerPaquetes(int contador)
 {
-    do{
+    do
+    {
         cout << '\n' << "Presiona Enter para coger más paquetes..." << '\n' << endl;
     }
     while (cin.get() != '\n');
     contador++;
 }
-void sigInstruccion()//Método para ir paso a paso con la ejecución del programa
+void sigInstruccion() //Método para ir paso a paso con la ejecución del programa
 {
     cout << '\n' << "Presiona Enter para realizar la siguiente instruccion..." << '\n' << endl;
     getchar();
 
 }
 
+Arbol *arbolCP=NULL;
+Lista *CAE=NULL;
+
+void inicializaSistema()
+{
+    // Inicializamos árbol de búsqueda y lista maestra de paquetes
+    arbolCP = new Arbol();
+    CAE = new Lista();
+    int aux[N1];
+
+    for (int i=0; i<N1; i++)//Crea las 8 centrales de paqueteria y las muestra por pantalla
+    {
+        CP cp=generarCpPredeterminado();
+        aux[i]=cp.numCP;
+        arbolCP->insertar(cp);
+        cout<<setw(3)<<i+1<<" "<< setw(8) << cp.numCP << " " <<"   "<< setw(12) << cp.localidad << endl;//Ver como se hace con abb y no con array
+    }
+
+    cout << string(27, '=') << "LISTADO DE PAQUETES" << string(27,'=') << endl;
+    cout << setw(4) << " No." << "|" << setw(7) << "ID Paq " << "|" << setw(9) << "   NIF   " << "|" << setw(21) << "     Coordenadas     " << "|" << endl;
+    cout << string(22, ' ') << "|" << setw(10) << " Latitud  " << "|"<< setw(10) << " Longitud " << "|" << endl;
+    cout << string(45, '-') << endl;
+    //Crea los 100 paquetes y los muestra por pantalla
+    for (int j=0; j<N2; j++)
+    {
+        // Seleccionamos aleatoriamente uno de los numCp generados en el paso anterior
+        Paquete p = generarPaquete(aux[rand()%N1]);
+        CAE->insertarNodo(p);
+        cout << setw(4)<< j+1 << " " << setw(7) << p.idPaquete << " " << setw(9) << p.NIF << " " << setw(2) << p.coordenadas.latitud[0] << "*" << setw(2) << p.coordenadas.latitud[1] << "'" << setw(2) << p.coordenadas.latitud[2] << "''" << " " << setw(2) << p.coordenadas.longitud[0] << "*"<< setw(2) << p.coordenadas.longitud[1] << "'" << setw(2) << p.coordenadas.longitud[2] << "''" << endl;
+    }
+}
 
 int main()
 {
     srand(time(NULL));
     int opcion;
     bool repetir = true;
-    Lista CAE;
-    Arbol arbolCP=null;//Tiene que ser un ABB
+    Paquete p;
+    CP centralPaq;
     int i=0, j=0, nPaquetes=0, nCP=0;
     int paquetesCogidos=0;
+    int codCentral = 0;
     int gradLat=0, minLat=0, segLat=0, gradLong=0, minLong=0, segLong=0;
     int contadorPaquetes=N1;
-    int contador =0;
+
     cout << string(33, '#') << "ALMACEN DE PAQUETES" << string(33, '#') << endl;
-    cout << string(27, '=') << "LISTADO DE PAQUETES ALMACENADOS" << string(27, '=') << endl;
-    cout << setw(4) << " No." << "|" << setw(7) << "ID Paq " << "|" << setw(9) << "   NIF   " << "|" << setw(21) << "     Coordenadas     " << "|" << endl;
-    cout << string(22, ' ') << "|" << setw(10) << " Latitud  " << "|"<< setw(10) << " Longitud " << "|" << endl;
+    cout << string(27, '=') << "LISTADO DE CENTRALES DE PAQUETERIA" << string(27, '=') << endl;
+    cout << setw(4) << " No." << "|" << setw(7) << "ID CP " << "|" << setw(9) << "   Nombre localidad   " << endl;
     cout << string(45, '-') << endl;
 
-    for (j=0; j<N2; j++)//Crea los 100 paquetes y los muestra por pantalla
+    inicializaSistema();
+
+    // Bucle de iteraciones/días
+    int contador = 0;
+    while(contador++<N5)
     {
-        p = generarPaquete();
-        CAE.insertarNodo(p);
-        nPaquetes=j+1;
-        cout << setw(4)<< nPaquetes << " " << setw(7) << p.idPaquete << " " << setw(9) << p.NIF << " " << setw(2) << p.coordenadas.latitud[0] << "*" << setw(2) << p.coordenadas.latitud[1] << "'" << setw(2) << p.coordenadas.latitud[2] << "''" << " " << setw(2) << p.coordenadas.longitud[0] << "*"<< setw(2) << p.coordenadas.longitud[1] << "'" << setw(2) << p.coordenadas.longitud[2] << "''" << endl;
-    }
-    for (i=0; i<N1; i++)//Crea las 8 centrales de paqueteria y las muestra por pantalla
-    {
-        cp=generarCpPredeterminado();
-        arbolCP.Insertar(cp.numCP);
-        nCP=i+1;
-        cout<<setw(2)<<nCP<<" " << setw(3) << arbolCP[i].numCP << " " << setw(10) << arbolCP[i].localidad << " " << endl;//Ver como se hace con abb y no con array
-    }
-    while(contador<6)
+        sigInstruccion();
+        cout << "Paquetes enviados en el día " << contador << ":"<<endl;
+        while(paquetesCogidos++ < N3)
         {
-            sigInstruccion();
-            ++contador;
-            cout << "Paquetes enviados en el dia " << contador << ":"<<endl;
-            while(paquetesCogidos++ < N3)
+            pNodoLista nodo = CAE->borrarNodo();
+            if (nodo!=NULL)
             {
-                p= CAE.borrarNodo();
-                int size= 7
-                cpEscogido= arbolCP[rand()%size];
-                cpEscogido.listaPaq(insertarNodo(p));
-                cout<< "Paquete: "<<p.idPaquete << " añadido a la lista de paquetes del CP de :" <<cpEscogido.localidad<< endl;//Ver como se hace con abb y no con array
+                p = nodo->getPaquete();
+                CP cpAux;
+                cpAux.numCP = p.numCP;
+                pNodoArbol nodo = arbolCP->buscar(cpAux);
+                nodo->getCentrarlP().listaPaq.insertarNodo(p);
+                delete(nodo);
+                cout<< "Paquete: "<<p.idPaquete << " añadido a la lista de paquetes del CP de :" <<nodo->getCentrarlP().localidad << endl;//Ver como se hace con abb y no con array
             }
+        }
+    }
 
-
-
-    do {
+    do
+    {
         system("cls");
         // Texto del menú que se verá cada vez
         cout << "\n\nMenu de Opciones" << endl;
@@ -179,57 +210,77 @@ int main()
         cout << "\nIngrese una opcion: ";
         cin >> opcion;
 
-        switch (opcion) {
-            case 1:
-                // Lista de instrucciones de la opción 1
-                system("pause>nul"); // Pausa
-                break;
+        switch (opcion)
+        {
+        case 1:
+            centralPaq.numCP = if (!arbolCP.buscar(cp.numCP)){generarNumCP();}; //Asigno el número de CP manual o aleatoriamente?
+            for(auto const& value : localidades) //Para ver las localidades disponibles.
+            {
+                cout << value << ", ";
+            }
+            cout << endl;
+            cout << "Localidad deseada: ";
+            cin >> centralPaq.localidad;
+            cout << endl;
+            system("pause>nul"); // Pausa
+            break;
 
-            case 2:
-                // Lista de instrucciones de la opción 2
-                system("pause>nul"); // Pausa
-                break;
+        case 2:
+            cout << "Codigo de la central que desea eliminar: "; //Busco la central por su código?
+            cin >> codCentral;
+            cout << endl;
+            arbolCP.borrar(arbolCP.buscar(codCentral));
+            system("pause>nul"); // Pausa
+            break;
 
-            case 3:
-                // Lista de instrucciones de la opción 3
-                system("pause>nul"); // Pausa
-                break;
+        case 3:
+            // Lista de instrucciones de la opción 3
+            cout << "Código de la central que desea ver: "
+            cin >> codCentral;
+            CAE.recorrerLista();
+            if (codCentral == )
+            {
+                cout << setw(7) << p.idPaquete << " " << setw(9) << p.NIF << " " << setw(2) << p.coordenadas.latitud[0] << "*" << setw(2) << p.coordenadas.latitud[1] << "'" << setw(2) << p.coordenadas.latitud[2] << "''" << " " << setw(2) << p.coordenadas.longitud[0] << "*"<< setw(2) << p.coordenadas.longitud[1] << "'" << setw(2) << p.coordenadas.longitud[2] << "''" << endl;
+            }
+            system("pause>nul"); // Pausa
+            break;
 
-            case 4:
-                // Lista de instrucciones de la opción 4
-                system("pause>nul"); // Pausa
-                break;
+        case 4:
+            // Lista de instrucciones de la opción 4
+            system("pause>nul"); // Pausa
+            break;
 
-            case 5:
-                // Lista de instrucciones de la opción 5
-                system("pause>nul"); // Pausa
-                break;
+        case 5:
+            // Lista de instrucciones de la opción 5
+            system("pause>nul"); // Pausa
+            break;
 
-            case 6:
-                // Lista de instrucciones de la opción 6
-                system("pause>nul"); // Pausa
-                break;
+        case 6:
+            // Lista de instrucciones de la opción 6
+            system("pause>nul"); // Pausa
+            break;
 
-            case 7:
-                // Lista de instrucciones de la opción 7
-                system("pause>nul"); // Pausa
-                break;
+        case 7:
+            // Lista de instrucciones de la opción 7
+            system("pause>nul"); // Pausa
+            break;
 
-            case 8:
-                // Lista de instrucciones de la opción 8
-                system("pause>nul"); // Pausa
-                break;
+        case 8:
+            // Lista de instrucciones de la opción 8
+            system("pause>nul"); // Pausa
+            break;
 
-            case 9:
-                // Lista de instrucciones de la opción 9
-                system("pause>nul"); // Pausa
-                break;
+        case 9:
+            // Lista de instrucciones de la opción 9
+            system("pause>nul"); // Pausa
+            break;
 
-            case 0:
-            	repetir = false;
-            	break;
+        case 0:
+            repetir = false;
+            break;
         }
-    } while (repetir);
+    }
+    while (repetir);
 
     return 0;
 }

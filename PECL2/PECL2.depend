@@ -1,0 +1,31 @@
+# depslib dependency file v1.0
+1639004828 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\eedd-master\tipos.cpp
+	<iostream>
+	"Tipos.h"
+
+1639002978 
+
+1639002978 c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\eedd-master\tipos.h
+	<iostream>
+
+1639251787 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\eedd-master\main.cpp
+	<iostream>
+	<ctime>
+	<cstdlib>
+	<iomanip>
+	"Tipos.h"
+
+1639004828 source:/home/javi/Uni/EEDD2/PECL2/Tipos.cpp
+	<iostream>
+	"Tipos.h"
+
+1639002978 /home/javi/Uni/EEDD2/PECL2/Tipos.h
+	<iostream>
+
+1639254289 source:/home/javi/Uni/EEDD2/PECL2/main.cpp
+	<iostream>
+	<ctime>
+	<cstdlib>
+	<iomanip>
+	"Tipos.h"
+

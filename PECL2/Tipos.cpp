@@ -6,7 +6,7 @@ using namespace std;
 //Métodos de tipos de datos:
 Lista::~Lista()
 {
-    pnodo aux;
+    pNodoLista aux;
     while(cabeza)
     {
         aux = cabeza;
@@ -16,65 +16,54 @@ Lista::~Lista()
     actual = NULL;
 }
 
-void Lista::insertarNodo(int v)
+void Lista::insertarNodo(Paquete p)
 {
-    pnodo aux;
+    pNodoLista aux;
     if (listaVacia())
     {
-        cabeza = new Nodo(v, NULL);
+        cabeza = new NodoLista(p, NULL);
         final = cabeza;
     }
     else
     {
-        aux = new Nodo(vnuevo,NULL);
-        actual -> siguiente = aux;
-        final = aux;
-    }
-}
-
-void Lista::insertarNodoIntermedio(int v, int posicion) //Hacer este método
-{
-    pnodo aux;
-    if (listaVacia())
-    {
-        cabeza = new Nodo(v, NULL);
-        final = cabeza;
-    }
-    else
-    {
-        int cont = 0;
-        aux = new Nodo(v,NULL);
-        while (actual -> valor != aux) //Localizar el nodo
-        {
-            cont++;
-            aux ->siguiente
+        aux = new NodoLista(p,NULL);
+        aux->siguiente = actual->siguiente;
+        actual->siguiente = aux;
+        actual = aux;
+        if (aux->siguiente==NULL) {
+            final = aux;
         }
     }
 }
 
-void Lista::borrarNodo(int v)
+pNodoLista Lista::borrarNodo()
 {
-    pnodo anterior;
-    actual = cabeza;
-    while (actual->valor!=v && (actual->siguiente)!=NULL)
-    {
-        anterior=actual;
-        actual=actual->siguiente;
+    // Si la lista está vacía tiene que devolver un NULL y no hacer nada
+    if (listaVacia()){
+        return NULL;
     }
-    if(actual==cabeza)   // Primer elemento
-    {
+
+    pNodoLista nodoBorrado = NULL;
+    pNodoLista aux = cabeza;
+    if (cabeza==actual){
         cabeza = actual->siguiente;
     }
     else
     {
-        anterior->siguiente = actual->siguiente;
-        if (actual==final)
+        while (aux!=NULL && aux->siguiente!=actual)
         {
-            final=anterior;
+            aux = aux->siguiente;
+        }
+        aux->siguiente=actual->siguiente;
+        if (aux->siguiente==NULL){
+            final=aux;
         }
     }
-    actual->siguiente=NULL;
-    delete actual;
+    nodoBorrado = actual;
+    actual=actual->siguiente;
+    nodoBorrado->siguiente=NULL;
+
+    return nodoBorrado;
 }
 
 bool Lista::listaVacia()
@@ -84,11 +73,11 @@ bool Lista::listaVacia()
 
 void Lista::recorrerLista()
 {
-    pnodo aux;
+    pNodoLista aux;
     aux = cabeza;
     while(aux)
     {
-        cout << aux->valor << "-> ";
+        cout << aux->paquete.idPaquete << "-> ";
         aux = aux->siguiente;
     }
     cout << endl;
@@ -121,226 +110,64 @@ bool Lista::esActual()
     return actual != NULL;
 }
 
-int Lista::valorActual()
+Paquete Lista::paqueteActual()
 {
-    return actual->valor;
+    return actual->paquete;
 }
 
-//Lista Doble
-const int ASCENDENTE=0;
-const int DESCENDENTE=1;
 
-ListaD::~ListaD()
-{
-    pnodo aux;
-    esCabeza();
-    while(cabeza)
-    {
-        aux = cabeza;
-        cabeza = cabeza->siguiente;
-        delete aux;
-    }
-    cabeza=NULL;
-    actual=NULL;
-    final=NULL;
-}
-
-void ListaD::insertarNodo(int v, char c)
-{
-    pnodo aux;
-    char tipoInsercion;
-    tipoInsercion=c;
-    if(listaDVacia()) // Si la lista está vacía
-    {
-        aux = new Nodo(v,NULL,NULL);
-        final=cabeza=aux;
-    }
-    else if (tipoInsercion=='f') //Inserción por el final
-    {
-        aux= new Nodo(v,NULL,NULL);
-        aux->anterior=final;
-        final->siguiente=aux;
-        final=aux;
-    }
-    else if (tipoInsercion=='p')  //Inserción por el principio
-    {
-        aux= new Nodo(v,NULL,NULL);
-        aux->siguiente=cabeza;
-        cabeza->anterior=aux;
-        cabeza=aux;
-    }
-}
-
-void ListaD::borrarNodo(char c)
-{
-    char tipoBorrado;
-    tipoBorrado=c;
-    if(tipoBorrado=='f')  //Eliminación por el final
-    {
-        pnodo aux=NULL;
-        if((cabeza==final))   //Sólo hay elemento
-        {
-            aux=final;
-            cabeza = final = NULL;
-            aux=NULL;
-            delete aux;
-        }
-        else
-        {
-            aux=final;
-            final=final->anterior;
-            aux->anterior=NULL;
-            final->siguiente=NULL;
-            delete aux;
-        }
-    }
-    else if(tipoBorrado=='p')  //Eliminación por el Principio
-    {
-        pnodo aux=NULL;
-        if((cabeza==final))  //Sólo hay elemento
-        {
-            aux=cabeza;
-            cabeza = final = NULL;
-            aux=NULL;
-            delete aux;
-        }
-        else
-        {
-            aux=cabeza;
-            cabeza=cabeza->siguiente;
-            aux->siguiente=NULL;
-            cabeza->anterior=NULL;
-            delete aux;
-        }
-    }
-}
-
-void ListaD::borrarNodoValor(int v) //Hacer este método
-{
-    while !(v = Lista.valorActual())
-    {
-        Lista.recorrerLista(ASCENDENTE);
-    }
-    aux=cabeza;
-    cabeza=cabeza->siguiente;
-    aux->siguiente=NULL;
-    cabeza->anterior=NULL;
-    delete aux;
-}
-
-void ListaD::recorrerLista (int orden)
-{
-    pnodo aux;
-    if (orden == ASCENDENTE)
-    {
-        esCabeza();
-        aux = cabeza;
-        while(aux)
-        {
-            cout << aux->valor << "-> ";
-            aux = aux->siguiente;
-        }
-    }
-    else
-    {
-        esFinal();
-        aux = final;
-        while(aux)
-        {
-            cout << aux->valor << "-> ";
-            aux = aux->anterior;
-        }
-    }
-    cout << endl;
-}
-
-bool ListaD::listaVacia()
-{
-    return cabeza == NULL;
-}
-
-void ListaD::esSiguiente()
-{
-    if(actual) actual = actual->siguiente;
-}
-
-void ListaD::esAnterior()
-{
-    if(actual) actual = actual->anterior;
-}
-
-void ListaD::esCabeza()
-{
-    actual=cabeza;
-}
-
-void ListaD::esFinal()
-{
-    actual=final;
-}
-
-bool ListaD::esActual()
-{
-    return actual != NULL;
-}
-
-int ListaD::valorActual()
-{
-    if (!listaDVacia()) return actual->valor;
-    else return 0;
-}
 
 //Arbol
 // Poda: borrar todos los nodos a partir de uno, incluido
-void Arbol::Podar(pNodoArbol &NodoArbol)
+void Arbol::podar(pNodoArbol &NodoArbol)
 {
    // Algoritmo recursivo, recorrido en postorden
    if(NodoArbol) {
-      Podar(NodoArbol->izquierdo); // Podar izquierdo
-      Podar(NodoArbol->derecho);   // Podar derecho
+      podar(NodoArbol->izquierdo); // Podar izquierdo
+      podar(NodoArbol->derecho);   // Podar derecho
       delete NodoArbol;            // Eliminar nodo
       NodoArbol = NULL;
    }
 }
 
 // Insertar un int en el árbol ABB
-void Arbol::Insertar(const int dat)
+void Arbol::insertar(CP cp)
 {
    pNodoArbol padre = NULL;
 
    actual = raiz;
    // Buscar el int en el árbol, manteniendo un puntero al nodo padre
-   while(!Vacio(actual) && dat  != actual->dato) {
+   while(!vacio(actual) && cp.numCP  != actual->centralP.numCP) {
       padre = actual;
-      if(dat > actual->dato) actual = actual->derecho;
-      else if(dat < actual->dato) actual = actual->izquierdo;
+      if(cp.numCP > actual->centralP.numCP) actual = actual->derecho;
+      else if(cp.numCP < actual->centralP.numCP) actual = actual->izquierdo;
    }
 
    // Si se ha encontrado el elemento, regresar sin insertar
-   if(!Vacio(actual)) return;
+   if(!vacio(actual)) return;
    // Si padre es NULL, entonces el árbol estaba vacío, el nuevo nodo será
    // el nodo raiz
-   if(Vacio(padre)) raiz = new Nodo(dat);
+   if(vacio(padre)) raiz = new NodoArbol(cp);
    // Si el int es menor que el que contiene el nodo padre, lo insertamos
    // en la rama izquierda
-   else if(dat < padre->dato) padre->izquierdo = new NodoArbol(dat);
+   else if(cp.numCP < padre->centralP.numCP) padre->izquierdo = new NodoArbol(cp);
    // Si el int es mayor que el que contiene el nodo padre, lo insertamos
    // en la rama derecha
-   else if(dat > padre->dato) padre->derecho = new NodoArbol(dat);
+   else if(cp.numCP > padre->centralP.numCP) padre->derecho = new NodoArbol(cp);
 }
 
 // Eliminar un elemento de un árbol ABB
-void Arbol::Borrar(const int dat)
+void Arbol::borrar(CP cp)
 {
    pNodoArbol padre = NULL;
    pNodoArbol nodo;
-   int aux;
+   CP aux;
 
    actual = raiz;
    // Mientras sea posible que el valor esté en el árbol
-   while(!Vacio(actual)) {
-      if(dat == actual->dato) { // Si el valor está en el nodo actual
-         if(EsHoja(actual)) { // Y si además es un nodo hoja: lo borramos
+   while(!vacio(actual)) {
+      if(cp.numCP == actual->centralP.numCP) { // Si el valor está en el nodo actual
+         if(esHoja(actual)) { // Y si además es un nodo hoja: lo borramos
             if(padre){ // Si tiene padre (no es el nodo raiz)
                // Anulamos el puntero que le hace referencia
                if(padre->derecho == actual) padre->derecho = NULL;
@@ -373,16 +200,16 @@ void Arbol::Borrar(const int dat)
             // y continuar, cerrando el bucle. El nodo encontrado no tiene
             // por qué ser un nodo hoja, cerrando el bucle nos aseguramos
             // de que sólo se eliminan nodos hoja.
-            aux = actual->dato;
-            actual->dato = nodo->dato;
-            nodo->dato = aux;
+            aux = actual->centralP;
+            actual->centralP = nodo->centralP;
+            nodo->centralP = aux;
             actual = nodo;
          }
       }
       else { // Todavía no hemos encontrado el valor, seguir buscándolo
          padre = actual;
-         if(dat > actual->dato) actual = actual->derecho;
-         else if(dat < actual->dato) actual = actual->izquierdo;
+         if(cp.numCP > actual->centralP.numCP) actual = actual->derecho;
+         else if(cp.numCP < actual->centralP.numCP) actual = actual->izquierdo;
       }
    }
 }
@@ -390,70 +217,70 @@ void Arbol::Borrar(const int dat)
 // Recorrido de árbol en inorden, aplicamos la función func, que tiene
 // el prototipo:
 // void func(int&);
-void Arbol::InOrden(void (*func)(int&) , pNodoArbol nodo, bool r)
+void Arbol::inOrden(void (*func)(int&) , pNodoArbol nodo, bool r)
 {
    if(r) nodo = raiz;
-   if(nodo->izquierdo) InOrden(func, nodo->izquierdo, false);
-   func(nodo->dato);
-   if(nodo->derecho) InOrden(func, nodo->derecho, false);
+   if(nodo->izquierdo) inOrden(func, nodo->izquierdo, false);
+   func(nodo->centralP.numCP);
+   if(nodo->derecho) inOrden(func, nodo->derecho, false);
 }
 
 // Recorrido de árbol en preorden, aplicamos la función func, que tiene
 // el prototipo:
 // void func(int&);
-void Arbol::PreOrden(void (*func)(int&), pNodoArbol nodo, bool r)
+void Arbol::preOrden(void (*func)(int&), pNodoArbol nodo, bool r)
 {
    if(r) nodo = raiz;
-   func(nodo->dato);
-   if(nodo->izquierdo) PreOrden(func, nodo->izquierdo, false);
-   if(nodo->derecho) PreOrden(func, nodo->derecho, false);
+   func(nodo->centralP.numCP);
+   if(nodo->izquierdo) preOrden(func, nodo->izquierdo, false);
+   if(nodo->derecho) preOrden(func, nodo->derecho, false);
 }
 
 // Recorrido de árbol en postorden, aplicamos la función func, que tiene
 // el prototipo:
 // void func(int&);
-void Arbol::PostOrden(void (*func)(int&), pNodoArbol nodo, bool r)
+void Arbol::postOrden(void (*func)(int&), pNodoArbol nodo, bool r)
 {
    if(r) nodo = raiz;
-   if(nodo->izquierdo) PostOrden(func, nodo->izquierdo, false);
-   if(nodo->derecho) PostOrden(func, nodo->derecho, false);
-   func(nodo->dato);
+   if(nodo->izquierdo) postOrden(func, nodo->izquierdo, false);
+   if(nodo->derecho) postOrden(func, nodo->derecho, false);
+   func(nodo->centralP.numCP);
 }
 
 // Buscar un valor en el árbol
-bool Arbol::Buscar(const int dat)
+pNodoArbol Arbol::buscar(CP cp)
 {
    actual = raiz;
 
    // Todavía puede aparecer, ya que quedan nodos por mirar
-   while(!Vacio(actual)) {
-      if(dat == actual->dato) return true; // int encontrado
-      else if(dat > actual->dato) actual = actual->derecho; // Seguir
-      else if(dat < actual->dato) actual = actual->izquierdo;
+   while(!vacio(actual)) {
+      if(cp.numCP == actual->centralP.numCP) return actual; // int encontrado
+      else if(cp.numCP > actual->centralP.numCP) actual = actual->derecho; // Seguir
+      else if(cp.numCP < actual->centralP.numCP) actual = actual->izquierdo;
    }
-   return false; // No está en árbol
+   return NULL; // No está en árbol
 }
 
 // Calcular la altura del nodo que contiene el int dat
-int Arbol::Altura(const int dat)
+int Arbol::calculaAltura(CP cp)
 {
    int altura = 0;
    actual = raiz;
 
    // Todavía puede aparecer, ya que quedan nodos por mirar
-   while(!Vacio(actual)) {
-      if(dat == actual->dato) return altura; // int encontrado
+   while(!vacio(actual)) {
+      if(cp.numCP == actual->centralP.numCP) return altura; // int encontrado
       else {
          altura++; // Incrementamos la altura, seguimos buscando
-         if(dat > actual->dato) actual = actual->derecho;
-         else if(dat < actual->dato) actual = actual->izquierdo;
+         if(cp.numCP > actual->centralP.numCP) actual = actual->derecho;
+         else if(cp.numCP < actual->centralP.numCP) actual = actual->izquierdo;
       }
    }
    return -1; // No está en árbol
 }
 
 // Contar el número de nodos
-const int Arbol::NumeroNodos()
+const int Arbol::numeroNodos()
 {
    contador = 0;
 
@@ -463,7 +290,7 @@ const int Arbol::NumeroNodos()
 
 // Función auxiliar para contar nodos. Función recursiva de recorrido en
 //   preorden, el proceso es aumentar el contador
-void Arbol::auxContador(pNodo nodo)
+void Arbol::auxContador(pNodoArbol nodo)
 {
    contador++;  // Otro nodo
    // Continuar recorrido
@@ -472,7 +299,7 @@ void Arbol::auxContador(pNodo nodo)
 }
 
 // Calcular la altura del árbol, que es la altura del nodo de mayor altura.
-const int Arbol::AlturaArbol()
+const int Arbol::alturaArbol()
 {
    altura = 0;
 
@@ -490,7 +317,7 @@ void Arbol::auxAltura(pNodoArbol nodo, int a)
    if(nodo->derecho)   auxAltura(nodo->derecho, a+1);
    // Proceso, si es un nodo hoja, y su altura es mayor que la actual del
    // árbol, actualizamos la altura actual del árbol
-   if(EsHoja(nodo) && a > altura) altura = a;
+   if(esHoja(nodo) && a > altura) altura = a;
 }
 
 // Función mostrar el contenido de los nodos del árbol
@@ -510,7 +337,7 @@ void generarArbol(Arbol& arbolNew)
     {
         num=rand()%MAX;
         cout << num << endl;
-        arbolNew.Insertar(num);
+//      arbolNew.insertar(num); // Santi, aquí tendríais que generar un CP de forma aleatoria. No entiendo la utilidad de este método. Yo lo quitaría
     }
 }
 

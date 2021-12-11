@@ -1,5 +1,5 @@
-#ifndef PilasColas
-#define PilasColas
+#ifndef Tipos
+#define Tipos
 
 #include <iostream>
 
@@ -20,6 +20,47 @@ struct Paquete
     int numCP;
 };
 
+
+//Lista
+class NodoLista
+{
+private:
+    Paquete paquete;
+    NodoLista *siguiente;
+    friend class Lista;
+public:
+    NodoLista(Paquete p, NodoLista *sig = NULL)
+    {
+        paquete= p;
+        siguiente = sig;
+    }
+    Paquete getPaquete(){
+        return paquete;
+    }
+};
+typedef NodoLista *pNodoLista;
+
+class Lista
+{
+private:
+    pNodoLista cabeza, actual, final;
+public:
+    Lista()
+    {
+        cabeza = actual = final = NULL;
+    }
+    ~Lista();
+    void insertarNodo(Paquete p);
+    void insertarNodoIntermedio(Paquete p, int posicion);
+    pNodoLista borrarNodo();
+    bool listaVacia();
+    void esCabeza();
+    void esFinal();
+    void esSiguiente();
+    bool esActual();
+    Paquete paqueteActual();
+    void recorrerLista();
+};
 struct CP
 {
     int numCP;
@@ -27,97 +68,22 @@ struct CP
     Lista listaPaq;
 };
 
-//Lista
-class NodoLista
-{
-private:
-    int valor;
-    NodoLista *siguiente;
-    friend class Lista;
-public:
-    NodoLista(int v, Nodo *sig = NULL)
-    {
-        valor = v;
-        siguiente = sig;
-    }
-};
-typedef NodoLista *pnodolista;
-
-class Lista
-{
-private:
-    pnodolista cabeza, actual, final;
-public:
-    Lista()
-    {
-        cabeza = actual = final = NULL;
-    }
-    ~Lista();
-    void insertarNodo(int v);
-    void insertarNodoIntermedio(int v, int posicion);
-    void borrarNodo(int v);
-    bool listaVacia();
-    void esCabeza();
-    void esFinal();
-    void esSiguiente();
-    bool esActual();
-    int valorActual();
-    void recorrerLista();
-};
-
-//Lista Doble
-class NodoListaD
-{
-private:
-    int valor;
-    NodoListaD *siguiente;
-    NodoListaD *anterior;
-    friend class ListaD;
-public:
-    NodoListaD(int v, NodoListaD *sig = NULL, NodoListaD *ant = NULL)
-    {
-        valor = v;
-        siguiente = sig;
-        anterior = ant;
-    }
-};
-typedef NodoListaD *pnodolistad;
-
-class ListaD
-{
-private:
-    pnodolistad cabeza, actual, final;
-public:
-    ListaD()
-    {
-        cabeza=actual=final=NULL;
-    }
-    ~Lista();
-    void insertarNodo(int v, char c);
-    void borrarNodo(char c);
-    void borrarNodoValor(int v);
-    bool listaVacia();
-    void esCabeza();
-    void esFinal();
-    void esSiguiente();
-    void esAnterior();
-    bool esActual();
-    int valorActual();
-    void recorrerLista(int);
-};
-
 class NodoArbol {
     private:
         // Miembros:
-        int dato;
+        CP centralP;
         NodoArbol *izquierdo;
         NodoArbol *derecho;
         friend class Arbol;
 
     public:
         // Constructor:
-        NodoArbol(const int dat, NodoArbol *izq=NULL, NodoArbol *der=NULL) :
-        dato(dat), izquierdo(izq), derecho(der) {}
+        NodoArbol(CP cp, NodoArbol *izq=NULL, NodoArbol *der=NULL) :
+        centralP(cp), izquierdo(izq), derecho(der) {};
+        CP getCentrarlP(){
+            return centralP;
+        };
+
 };
 typedef NodoArbol *pNodoArbol;
 
@@ -132,35 +98,35 @@ class Arbol {
     public:
         // Constructor y destructor básicos:
         Arbol() : raiz(NULL), actual(NULL) {}
-        ~Arbol() { Podar(raiz); }
+        ~Arbol() { podar(raiz); }
         // Insertar en árbol ordenado:
-        void Insertar(const int dat);
+        void insertar(CP cp);
         // Borrar un elemento del árbol:
-        void Borrar(const int dat);
+        void borrar(CP cp);
         // Función de búsqueda:
-        bool Buscar(const int dat);
+        pNodoArbol buscar(CP cp);
         // Comprobar si el árbol está vacío:
-        bool Vacio(pNodo r) { return r==NULL; }
+        bool vacio(pNodoArbol r) { return r==NULL; }
         // Comprobar si es un nodo hoja:
-        bool EsHoja(pNodo r) { return !r->derecho && !r->izquierdo; }
+        bool esHoja(pNodoArbol r) { return r->derecho!=NULL && r->izquierdo!=NULL; }
         // Contar número de nodos:
-        const int NumeroNodos();
-        const int AlturaArbol();
+        const int numeroNodos();
+        const int alturaArbol();
         // Calcular altura de un int:
-        int Altura(const int dat);
+        int calculaAltura(CP cp);
         // Devolver referencia al int del nodo actual:
-        int ValorActual() { return actual->dato; } //&ValorActual()
+        CP cpActual() { return actual->centralP; } //&ValorActual()
         // Moverse al nodo raiz:
-        void Raiz() { actual = raiz; }
+        void volverARaiz() { actual = raiz; }
         // Aplicar una función a cada elemento del árbol:
-        void InOrden(void (*func)(int&) , pNodo nodo=NULL, bool r=true);
-        void PreOrden(void (*func)(int&) , pNodo nodo=NULL, bool r=true);
-        void PostOrden(void (*func)(int&) , pNodo nodo=NULL, bool r=true);
+        void inOrden(void (*func)(int&) , pNodoArbol nodo=NULL, bool r=true);
+        void preOrden(void (*func)(int&) , pNodoArbol nodo=NULL, bool r=true);
+        void postOrden(void (*func)(int&) , pNodoArbol nodo=NULL, bool r=true);
         private:
         // Funciones auxiliares
-        void Podar(pNodo &nodo);
-        void auxContador(pNodo nodo);
-        void auxAltura(pNodo nodo, int alt);
+        void podar(pNodoArbol &nodo);
+        void auxContador(pNodoArbol nodo);
+        void auxAltura(pNodoArbol nodo, int alt);
 };
 
 void Mostrar(int&);
