@@ -155,6 +155,7 @@ int main()
     bool repetir = true;
     Paquete p;
     CP centralPaq;
+    string IDp, IDcp;
     int i=0, j=0, nPaquetes=0, nCP=0;
     int paquetesCogidos=0;
     int codCentral = 0;
@@ -213,6 +214,7 @@ int main()
         switch (opcion)
         {
         case 1:
+            // Insertar una CP de forma manual
             centralPaq.numCP = if (!arbolCP.buscar(cp.numCP)){generarNumCP();}; //Asigno el número de CP manual o aleatoriamente?
             for(auto const& value : localidades) //Para ver las localidades disponibles.
             {
@@ -226,6 +228,7 @@ int main()
             break;
 
         case 2:
+            // Borrar una CP del árbol
             cout << "Codigo de la central que desea eliminar: "; //Busco la central por su código?
             cin >> codCentral;
             cout << endl;
@@ -234,7 +237,7 @@ int main()
             break;
 
         case 3:
-            // Lista de instrucciones de la opción 3
+            // Mostrar los datos de los paquetes que se distribuirán en una CP dada
             cout << "Código de la central que desea ver: "
             cin >> codCentral;
             CAE.recorrerLista();
@@ -246,36 +249,62 @@ int main()
             break;
 
         case 4:
-            // Lista de instrucciones de la opción 4
+            // Mostrar una estadística de las CP de la empresa recorriendo Inorden los nodos del árbol
+            arbolCP.inOrden();
+            // Estadística? Se refiere a los paquetes que se han repartido desde cada CP o qué?
             system("pause>nul"); // Pausa
             break;
 
         case 5:
-            // Lista de instrucciones de la opción 5
+            // Buscar un paquete concreto por su ID
+            cout << "ID del paquete a buscar: ";
+            cin >> IDp;
+            cout << endl;
+            if (CAE.actual->getPaquete().idPaquete != IDp)
+            {
+                CAE.esSiguiente();
+            }
+            else if (CAE.final->getPaquete().idPaquete != IDp)
+            {
+                cout << "No se ha encontrado el paquete en el CAE. Se buscará en los CP." << endl;
+            }
+            else
+            {
+                cout << "El paquete con ID " << CAE.actual->getPaquete().idPaquete << " se encuentra en el CAE."<< endl;
+            }
+            arbolCP.preOrden();
+            // Quiero recorrer el árbol y buscar en la lista de paquetes de cada CP si está este paquete.
             system("pause>nul"); // Pausa
             break;
 
         case 6:
-            // Lista de instrucciones de la opción 6
+            // Extraer algún paquete concreto de una CP dada (borrarlo del sistema)
+            cout << "ID del paquete a buscar: ";
+            cin >> IDcp;
+            cout << endl;
+            arbolCP.preOrden(buscar(actual),actual.ID);
+            arbolCP.
             system("pause>nul"); // Pausa
             break;
 
         case 7:
-            // Lista de instrucciones de la opción 7
+            // Llevar un paquete concreto del CAE a una CP concreta
             system("pause>nul"); // Pausa
             break;
 
         case 8:
-            // Lista de instrucciones de la opción 8
+            // Llevar un paquete concreto de una CP a otra
             system("pause>nul"); // Pausa
             break;
 
         case 9:
-            // Lista de instrucciones de la opción 9
+            // Continuar con la distribución de paquetes
+            sigInstruccion();
             system("pause>nul"); // Pausa
             break;
 
         case 0:
+            // Salir del programa
             repetir = false;
             break;
         }
