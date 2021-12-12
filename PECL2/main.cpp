@@ -282,8 +282,9 @@ int main()
             cout << "ID del paquete a buscar: ";
             cin >> IDcp;
             cout << endl;
-            arbolCP.preOrden(buscar(actual),actual.ID);
+            arbolCP.preOrden(buscar(actual->listaPaq),actual.ID);
             arbolCP.
+            CP.
             system("pause>nul"); // Pausa
             break;
 
