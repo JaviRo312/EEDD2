@@ -23,6 +23,7 @@ void Lista::insertarNodo(Paquete p)
     {
         cabeza = new NodoLista(p, NULL);
         final = cabeza;
+        actual = cabeza;
     }
     else
     {
@@ -71,11 +72,11 @@ bool Lista::listaVacia()
     return cabeza == NULL;
 }
 
-void Lista::recorrerLista()
+void Lista::recorrerLista()//Revisar
 {
     pNodoLista aux;
     aux = cabeza;
-    while(aux)
+    while(aux!= NULL)
     {
         cout << aux->paquete.idPaquete << "-> ";
         aux = aux->siguiente;
@@ -114,6 +115,12 @@ Paquete Lista::paqueteActual()
 {
     return actual->paquete;
 }
+
+pNodoLista Lista::borrarAntiguo(){
+    actual= final;
+    return borrarNodo();
+}
+
 
 
 

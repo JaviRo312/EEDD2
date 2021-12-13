@@ -51,7 +51,6 @@ public:
     }
     ~Lista();
     void insertarNodo(Paquete p);
-    void insertarNodoIntermedio(Paquete p, int posicion);
     pNodoLista borrarNodo();
     bool listaVacia();
     void esCabeza();
@@ -60,7 +59,9 @@ public:
     bool esActual();
     Paquete paqueteActual();
     void recorrerLista();
+    pNodoLista borrarAntiguo();
 };
+
 struct CP
 {
     int numCP;

@@ -119,12 +119,14 @@ void sigInstruccion() //Método para ir paso a paso con la ejecución del progra
 Arbol *arbolCP=NULL;
 Lista *CAE=NULL;
 
+
 void inicializaSistema()
 {
     // Inicializamos árbol de búsqueda y lista maestra de paquetes
     arbolCP = new Arbol();
     CAE = new Lista();
     int aux[N1];
+    Paquete p;
 
     for (int i=0; i<N1; i++)//Crea las 8 centrales de paqueteria y las muestra por pantalla
     {
@@ -142,10 +144,15 @@ void inicializaSistema()
     for (int j=0; j<N2; j++)
     {
         // Seleccionamos aleatoriamente uno de los numCp generados en el paso anterior
-        Paquete p = generarPaquete(aux[rand()%N1]);
+        p=generarPaquete(aux[rand()%N1]);
         CAE->insertarNodo(p);
         cout << setw(4)<< j+1 << " " << setw(7) << p.idPaquete << " " << setw(9) << p.NIF << " " << setw(2) << p.coordenadas.latitud[0] << "*" << setw(2) << p.coordenadas.latitud[1] << "'" << setw(2) << p.coordenadas.latitud[2] << "''" << " " << setw(2) << p.coordenadas.longitud[0] << "*"<< setw(2) << p.coordenadas.longitud[1] << "'" << setw(2) << p.coordenadas.longitud[2] << "''" << endl;
     }
+}
+
+void muestraNodoArbol(int &valor)
+{
+    cout << valor << ";" << endl;
 }
 
 int main()
@@ -155,10 +162,13 @@ int main()
     bool repetir = true;
     Paquete p;
     CP centralPaq;
-    string IDp, IDcp;
+    CP cpAux;
     int i=0, j=0, nPaquetes=0, nCP=0;
     int paquetesCogidos=0;
-    int codCentral = 0;
+    int codCentralCase2 = 0;
+    int codCentralCase3 = 0;
+    CP cpSelec;
+    Paquete paqueteSelec;
     int gradLat=0, minLat=0, segLat=0, gradLong=0, minLong=0, segLong=0;
     int contadorPaquetes=N1;
 
@@ -174,19 +184,20 @@ int main()
     while(contador++<N5)
     {
         sigInstruccion();
-        cout << "Paquetes enviados en el día " << contador << ":"<<endl;
+        paquetesCogidos=0;
+        cout << "Paquetes enviados en el dia " << contador << ":"<<endl;
         while(paquetesCogidos++ < N3)
         {
-            pNodoLista nodo = CAE->borrarNodo();
-            if (nodo!=NULL)
+            pNodoLista nodoLista = CAE->borrarAntiguo();
+            if (nodoLista!=NULL)
             {
-                p = nodo->getPaquete();
+                p = nodoLista->getPaquete();
                 CP cpAux;
                 cpAux.numCP = p.numCP;
-                pNodoArbol nodo = arbolCP->buscar(cpAux);
-                nodo->getCentrarlP().listaPaq.insertarNodo(p);
-                delete(nodo);
-                cout<< "Paquete: "<<p.idPaquete << " añadido a la lista de paquetes del CP de :" <<nodo->getCentrarlP().localidad << endl;//Ver como se hace con abb y no con array
+                pNodoArbol nodoArbol = arbolCP->buscar(cpAux);
+                nodoArbol->getCentrarlP().listaPaq.insertarNodo(p);
+                delete(nodoLista);
+                cout<< "Paquete: "<<p.idPaquete << " annadido a la lista de paquetes del CP de :" <<nodoArbol->getCentrarlP().numCP << endl;//Ver como se hace con abb y no con array
             }
         }
     }
@@ -215,7 +226,8 @@ int main()
         {
         case 1:
             // Insertar una CP de forma manual
-            centralPaq.numCP = if (!arbolCP.buscar(cp.numCP)){generarNumCP();}; //Asigno el número de CP manual o aleatoriamente?
+            cout<<"Numero de CP deseado(Numero de tres cifras): ";
+            cin >>centralPaq.numCP;//Asigno el número de CP manual
             for(auto const& value : localidades) //Para ver las localidades disponibles.
             {
                 cout << value << ", ";
@@ -224,24 +236,41 @@ int main()
             cout << "Localidad deseada: ";
             cin >> centralPaq.localidad;
             cout << endl;
+            centralPaq.listaPaq= Lista();
+            arbolCP->insertar(centralPaq);
+            arbolCP->inOrden(&muestraNodoArbol);
             system("pause>nul"); // Pausa
             break;
 
         case 2:
             // Borrar una CP del árbol
-            cout << "Codigo de la central que desea eliminar: "; //Busco la central por su código?
-            cin >> codCentral;
+            cout << "Lista de centrales disponibles:"<<endl;
+            arbolCP->inOrden(&muestraNodoArbol);
+            cout << "Codigo de la central que desea eliminar: "; //Busco la central por su código
+            cin >> codCentralCase2;
+            cpAux.numCP=codCentralCase2;
             cout << endl;
-            arbolCP.borrar(arbolCP.buscar(codCentral));
+            arbolCP->borrar(cpAux);
+
+            arbolCP->inOrden(&muestraNodoArbol);
             system("pause>nul"); // Pausa
             break;
 
         case 3:
             // Mostrar los datos de los paquetes que se distribuirán en una CP dada
-            cout << "Código de la central que desea ver: "
-            cin >> codCentral;
-            CAE.recorrerLista();
-            if (codCentral == )
+            arbolCP->inOrden(&muestraNodoArbol);
+            cout << "Central que desea ver (Numero de tres cifras): ";
+            cin >> codCentralCase3;
+            cpSelec.numCP=codCentralCase3;
+
+            if (arbolCP->buscar(cpSelec)!=NULL){
+                cpSelec.listaPaq.recorrerLista();
+            }
+            else{
+                cout<<"No hay ninguna central con ese codigo"<<endl;
+            }
+
+            /*for (codCentral == )
             {
                 cout << setw(7) << p.idPaquete << " " << setw(9) << p.NIF << " " << setw(2) << p.coordenadas.latitud[0] << "*" << setw(2) << p.coordenadas.latitud[1] << "'" << setw(2) << p.coordenadas.latitud[2] << "''" << " " << setw(2) << p.coordenadas.longitud[0] << "*"<< setw(2) << p.coordenadas.longitud[1] << "'" << setw(2) << p.coordenadas.longitud[2] << "''" << endl;
             }
@@ -250,41 +279,41 @@ int main()
 
         case 4:
             // Mostrar una estadística de las CP de la empresa recorriendo Inorden los nodos del árbol
-            arbolCP.inOrden();
+            /*arbolCP.inOrden();*/
             // Estadística? Se refiere a los paquetes que se han repartido desde cada CP o qué?
             system("pause>nul"); // Pausa
             break;
 
         case 5:
             // Buscar un paquete concreto por su ID
-            cout << "ID del paquete a buscar: ";
-            cin >> IDp;
+            /*cout << "ID del paquete a buscar: ";
+            cin >> paqueteSelec;
             cout << endl;
-            if (CAE.actual->getPaquete().idPaquete != IDp)
+            if (CAE.buscarElemento(paqueteSelec)== true)
             {
-                CAE.esSiguiente();
-            }
-            else if (CAE.final->getPaquete().idPaquete != IDp)
-            {
-                cout << "No se ha encontrado el paquete en el CAE. Se buscará en los CP." << endl;
+                return paqueteSelec.idPaquete;
             }
             else
             {
-                cout << "El paquete con ID " << CAE.actual->getPaquete().idPaquete << " se encuentra en el CAE."<< endl;
-            }
-            arbolCP.preOrden();
-            // Quiero recorrer el árbol y buscar en la lista de paquetes de cada CP si está este paquete.
+                arbolCP.inOrden(,,);
+                //cada vez que recorra el arbol tiene que meter en una variable el cp visto en ese momento(cpRecorrida)
+                //para buscar en su lista de paquetes el paquete que queremos encontrar y sino pasar a otro cp diferente
+                while(cpRecorrida.buscarElemento(paqueteSelec)==false ){
+                cout << "No se ha encontrado el paquete en la cp:"<<cpRecorrida.numCP<<". Se buscará en los demás CP." << endl;
+                }
+                 cout << "Se ha encontrado el paquete en la cp:"<<cpRecorrida.numCP<<". Sus datos son: "<< " " << setw(7) << p.idPaquete << " " << setw(9) << p.NIF << " " << setw(2) << p.coordenadas.latitud[0] << "*" << setw(2) << p.coordenadas.latitud[1] << "'" << setw(2) << p.coordenadas.latitud[2] << "''" << " " << setw(2) << p.coordenadas.longitud[0] << "*"<< setw(2) << p.coordenadas.longitud[1] << "'" << setw(2) << p.coordenadas.longitud[2] << "''" << endl; << endl;
+            }*/
             system("pause>nul"); // Pausa
             break;
 
         case 6:
             // Extraer algún paquete concreto de una CP dada (borrarlo del sistema)
-            cout << "ID del paquete a buscar: ";
-            cin >> IDcp;
-            cout << endl;
-            arbolCP.preOrden(buscar(actual->listaPaq),actual.ID);
-            arbolCP.
-            CP.
+            /* cout << "ID del paquete a buscar: ";
+             cin >> IDcp;
+             cout << endl;
+             arbolCP.preOrden(buscar(actual->listaPaq),actual.ID);
+             arbolCP.
+             CP.*/
             system("pause>nul"); // Pausa
             break;
 
@@ -300,7 +329,7 @@ int main()
 
         case 9:
             // Continuar con la distribución de paquetes
-            sigInstruccion();
+            //sigInstruccion();
             system("pause>nul"); // Pausa
             break;
 
