@@ -52,21 +52,24 @@ public:
     ~Lista();
     void insertarNodo(Paquete p);
     pNodoLista borrarNodo();
+    void borrarNodoIntermedio(pNodoLista nodo);
     bool listaVacia();
     void esCabeza();
     void esFinal();
     void esSiguiente();
     bool esActual();
     Paquete paqueteActual();
-    void recorrerLista();
+    void mostrarLista();
     pNodoLista borrarAntiguo();
+    int numNodos();
+    pNodoLista existe(string idPaquete);
 };
 
 struct CP
 {
     int numCP;
     string localidad;
-    Lista listaPaq;
+    Lista *listaPaq;
 };
 
 class NodoArbol {
@@ -123,6 +126,11 @@ class Arbol {
         void inOrden(void (*func)(int&) , pNodoArbol nodo=NULL, bool r=true);
         void preOrden(void (*func)(int&) , pNodoArbol nodo=NULL, bool r=true);
         void postOrden(void (*func)(int&) , pNodoArbol nodo=NULL, bool r=true);
+        void inOrdenCP(void (*func)(CP&) , pNodoArbol nodo=NULL, bool r=true);
+        void preOrdenCP(void (*func)(CP&) , pNodoArbol nodo=NULL, bool r=true);
+        void postOrdenCP(void (*func)(CP&) , pNodoArbol nodo=NULL, bool r=true);
+        Paquete *buscarInOrdenCP(Paquete *(*func)(CP&, string),string idPaquete, pNodoArbol nodo=NULL, bool r=true);
+        pNodoArbol buscarNodoInOrdenCP(bool (*func)(CP&, string),string idPaquete, pNodoArbol nodo=NULL, bool r=true);
         private:
         // Funciones auxiliares
         void podar(pNodoArbol &nodo);
@@ -130,7 +138,5 @@ class Arbol {
         void auxAltura(pNodoArbol nodo, int alt);
 };
 
-void Mostrar(int&);
-void generarArbol(Arbol&);
 
 #endif

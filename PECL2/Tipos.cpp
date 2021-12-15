@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cstdlib>
 #include "Tipos.h"
+#include <iomanip>
 
 using namespace std;
 
@@ -47,6 +49,7 @@ pNodoLista Lista::borrarNodo()
     pNodoLista nodoBorrado = NULL;
     pNodoLista aux = cabeza;
     if (cabeza==actual){
+        if (actual==cabeza) actual=actual->siguiente;
         cabeza = actual->siguiente;
     }
     else
@@ -67,21 +70,50 @@ pNodoLista Lista::borrarNodo()
     return nodoBorrado;
 }
 
+void Lista::borrarNodoIntermedio(pNodoLista nodo){
+
+    // Si la lista está vacía tiene que devolver un NULL y no hacer nada
+    if (listaVacia() || nodo==NULL){
+        return;
+    }
+
+    pNodoLista nodoBorrado = NULL;
+    pNodoLista aux = cabeza;
+    if (cabeza==nodo){
+        if (actual==cabeza) actual=nodo->siguiente;
+        cabeza = nodo->siguiente;
+    }
+    else
+    {
+        while (aux!=NULL && aux->siguiente!=nodo)
+        {
+            aux = aux->siguiente;
+        }
+        aux->siguiente=nodo->siguiente;
+        if (actual==nodo) actual = aux;
+        if (aux->siguiente==NULL){
+            final=aux;
+        }
+    }
+//    nodo->siguiente=NULL;
+}
+
+
 bool Lista::listaVacia()
 {
     return cabeza == NULL;
 }
 
-void Lista::recorrerLista()//Revisar
+void Lista::mostrarLista()
 {
     pNodoLista aux;
     aux = cabeza;
-    while(aux!= NULL)
+    int j=0;
+    while(aux!=NULL)
     {
-        cout << aux->paquete.idPaquete << "-> ";
+        cout << setw(4)<< ++j << " " << setw(7) << aux->getPaquete().idPaquete << " " << setw(9) << aux->getPaquete().NIF << " " << setw(2) << aux->getPaquete().coordenadas.latitud[0] << "*" << setw(2) << aux->getPaquete().coordenadas.latitud[1] << "'" << setw(2) << aux->getPaquete().coordenadas.latitud[2] << "''" << " " << setw(2) << aux->getPaquete().coordenadas.longitud[0] << "*"<< setw(2) << aux->getPaquete().coordenadas.longitud[1] << "'" << setw(2) << aux->getPaquete().coordenadas.longitud[2] << "''" << endl;
         aux = aux->siguiente;
     }
-    cout << endl;
 }
 
 void Lista::esCabeza()
@@ -121,7 +153,32 @@ pNodoLista Lista::borrarAntiguo(){
     return borrarNodo();
 }
 
+int Lista::numNodos(){
+    pNodoLista aux;
+    aux = cabeza;
+    int j=0;
+    while(aux!=NULL)
+    {
+        j++;
+        aux = aux->siguiente;
+    }
+    return j;
+}
 
+
+pNodoLista Lista::existe(string idPaquete){
+    Paquete p;
+    pNodoLista aux = cabeza;
+    while (aux!=NULL){
+        p = aux->getPaquete();
+        if (p.idPaquete==idPaquete){
+            return aux;
+        } else {
+            aux = aux->siguiente;
+        }
+    }
+    return NULL;
+}
 
 
 //Arbol
@@ -254,6 +311,69 @@ void Arbol::postOrden(void (*func)(int&), pNodoArbol nodo, bool r)
    func(nodo->centralP.numCP);
 }
 
+// Recorrido de árbol en inorden, aplicamos la función func, que tiene
+// el prototipo:
+// void func(int&);
+void Arbol::inOrdenCP(void (*func)(CP&) , pNodoArbol nodo, bool r)
+{
+   if(r) nodo = raiz;
+   if(nodo->izquierdo) inOrdenCP(func, nodo->izquierdo, false);
+   func(nodo->centralP);
+   if(nodo->derecho) inOrdenCP(func, nodo->derecho, false);
+}
+
+// Recorrido de árbol en preorden, aplicamos la función func, que tiene
+// el prototipo:
+// void func(int&);
+void Arbol::preOrdenCP(void (*func)(CP&), pNodoArbol nodo, bool r)
+{
+   if(r) nodo = raiz;
+   func(nodo->centralP);
+   if(nodo->izquierdo) preOrdenCP(func, nodo->izquierdo, false);
+   if(nodo->derecho) preOrdenCP(func, nodo->derecho, false);
+}
+
+// Recorrido de árbol en postorden, aplicamos la función func, que tiene
+// el prototipo:
+// void func(int&);
+void Arbol::postOrdenCP(void (*func)(CP&), pNodoArbol nodo, bool r)
+{
+   if(r) nodo = raiz;
+   if(nodo->izquierdo) postOrdenCP(func, nodo->izquierdo, false);
+   if(nodo->derecho) postOrdenCP(func, nodo->derecho, false);
+   func(nodo->centralP);
+}
+
+Paquete *Arbol::buscarInOrdenCP(Paquete *(*func)(CP&, string),string idPaquete, pNodoArbol nodo, bool r)
+{
+   if(r) nodo = raiz;
+   Paquete *p;
+   if(nodo->izquierdo) {
+        p=buscarInOrdenCP(func, idPaquete, nodo->izquierdo, false);
+        if (p!=NULL) return p;
+   }
+   p=func(nodo->centralP,idPaquete);
+   if (p!=NULL) return p;
+   if(nodo->derecho) p=buscarInOrdenCP(func, idPaquete, nodo->derecho, false);
+   return p;
+}
+
+pNodoArbol Arbol::buscarNodoInOrdenCP(bool (*func)(CP&, string),string idPaquete, pNodoArbol nodo, bool r)
+{
+   if(r) nodo = raiz;
+   pNodoArbol p;
+   if(nodo->izquierdo) {
+        p=buscarNodoInOrdenCP(func, idPaquete, nodo->izquierdo, false);
+        if (p!=NULL) return p;
+   }
+   if(func(nodo->centralP,idPaquete)){
+        cout << "encontrado" << endl;
+        return nodo;
+   }
+   if(nodo->derecho) return buscarNodoInOrdenCP(func, idPaquete, nodo->derecho, false);
+}
+
+
 // Buscar un valor en el árbol
 pNodoArbol Arbol::buscar(CP cp)
 {
@@ -333,7 +453,7 @@ void Mostrar(int &d)
    cout << d << ",";
 }
 
-//Funión que permite generar árboles de forma aleatoria
+//Función que permite generar árboles de forma aleatoria
 void generarArbol(Arbol& arbolNew)
 {
     int i = 0;

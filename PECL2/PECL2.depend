@@ -36,7 +36,7 @@
 1639328544 c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\eedd2-master\pecl2\tipos.h
 	<iostream>
 
-1639434523 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\main.cpp
+1639525524 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\main.cpp
 	<iostream>
 	<ctime>
 	<cstdlib>
@@ -44,10 +44,10 @@
 	<vector>
 	"Tipos.h"
 
-1639434055 c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\tipos.h
+1639525223 c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\tipos.h
 	<iostream>
 
-1639434498 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\tipos.cpp
+1639434705 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\tipos.cpp
 	<iostream>
 	"Tipos.h"
 
