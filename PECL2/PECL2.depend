@@ -3,10 +3,12 @@
 	<iostream>
 	"Tipos.h"
 
-1639002978 
+1639434705 
 
 1639002978 c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\eedd-master\tipos.h
 	<iostream>
+
+1639525223 
 
 1639251787 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\eedd-master\main.cpp
 	<iostream>
@@ -50,4 +52,21 @@
 1639434705 source:c:\users\santi\documents\universidad\2do año\tercer cuatri\estructura de datos\prueba eedd2\tipos.cpp
 	<iostream>
 	"Tipos.h"
+
+1639529444 source:/home/javi/Uni/EEDD2/PECL2/main.cpp
+	<iostream>
+	<ctime>
+	<cstdlib>
+	<iomanip>
+	<vector>
+	"Tipos.h"
+
+1639529108 /home/javi/Uni/EEDD2/PECL2/Tipos.h
+	<iostream>
+
+1639529444 source:/home/javi/Uni/EEDD2/PECL2/Tipos.cpp
+	<iostream>
+	<cstdlib>
+	"Tipos.h"
+	<iomanip>
 
